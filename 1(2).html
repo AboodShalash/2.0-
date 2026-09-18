@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Balance - تطبيق التركيز Pro</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='23' r='13' fill='none' stroke='white' stroke-width='4'/%3E%3Cpath d='M32 23V15M32 23L38 27' stroke='white' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M12 39H52M32 36V52M25 52H39M17 39L11 50M47 39L53 50M11 50H23M41 50H53' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M17 39H47' stroke='white' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <!-- Cairo Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --surface-1: #ffffff;
+      --surface-2: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --text-danger: #ef4444;
+      --border: #e2e8f0;
+      --accent: #6366f1;
+      --fill-field: #f8fafc;
+      --fill-ghost-hover: #f1f5f9;
+      --radius: 18px;
+      --font-sans: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body.dark-mode {
+      --bg-color: #0f172a;
+      --surface-1: #1e293b;
+      --surface-2: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --border: #334155;
+      --fill-field: #0f172a;
+      --fill-ghost-hover: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    #app-root {
+      width: 100%;
+      max-width: 500px;
+      background: var(--surface-1);
+      border-radius: 28px;
+      padding: 1.5rem;
+      box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    #app-root.focus-mode .hide-in-focus {
+      display: none !important;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      background: var(--surface-1);
+      color: var(--text-primary);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      touch-action: manipulation;
+    }
+
+    button:hover {
+      background: var(--fill-ghost-hover);
+      border-color: var(--border);
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    input[type="text"], input[type="number"], textarea, select {
+      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--fill-field);
+      color: var(--text-primary);
+      outline: none;
+      padding: 12px 14px;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      background: var(--surface-1);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-accent:hover {
+      opacity: 0.93;
+      background: var(--accent);
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-top: 1rem;
+      overflow: hidden;
+      background: var(--surface-1);
+    }
+
+    .accordion-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+    }
+
+    .accordion-header:hover {
+      background: var(--fill-ghost-hover);
+    }
+
+    .accordion-chevron {
+      transition: transform 0.25s ease;
+    }
+
+    .accordion-body {
+      display: none;
+      padding: 0 16px 16px 16px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* إخفاء شريط التمرير (ScrollBar) بالكامل مع بقاء التمرير شغّال */
+    #categories-wrapper {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      align-items: center;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE and Edge */
+    }
+
+    #categories-wrapper::-webkit-scrollbar {
+      display: none !important; /* Chrome, Safari, Opera */
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    .category-chip {
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      user-select: none;
+    }
+
+    .category-chip.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* تحسين أيقونة الحذف وإظهارها بوضوح */
+    .delete-cat-icon {
+      font-size: 14px;
+      margin-right: 4px;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .category-chip.active .delete-cat-icon {
+      background: rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+    }
+
+    .delete-cat-icon:hover {
+      background: var(--text-danger) !important;
+      color: #ffffff !important;
+      transform: scale(1.15);
+    }
+
+    .add-category-btn {
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px dashed var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .add-category-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .pomo-btn {
+      padding: 5px 10px;
+      font-size: 11px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+    }
+
+    .pomo-btn.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .streak-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(245, 158, 11, 0.12);
+      color: #d97706;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sound-chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .svg-container {
+      position: relative;
+      width: 100%;
+      max-width: 230px;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .svg-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .stats-panel {
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border);
+      display: none;
+    }
+    
+    .stats-panel.visible {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    canvas {
+      width: 100%;
+      height: 140px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .icon-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      max-height: 140px;
+      overflow-y: auto;
+      padding: 4px;
+      margin-bottom: 1rem;
+    }
+
+    .icon-option {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    .icon-option:hover {
+      border-color: var(--accent);
+    }
+
+    .icon-option.selected {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+
+
+    /* Enhanced dashboard */
+    .quick-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}
+    .quick-stat{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px 6px;text-align:center}
+    .quick-stat strong{display:block;font-size:18px;color:var(--accent);font-variant-numeric:tabular-nums}
+    .quick-stat span{font-size:10px;color:var(--text-secondary)}
+    .daily-progress{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:11px 12px;margin-bottom:14px}
+    .progress-track{height:8px;background:var(--border);border-radius:10px;overflow:hidden;margin-top:8px}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#22c55e);border-radius:10px}
+    .category-chip{border-inline-start:4px solid var(--cat-color,var(--accent))}
+    .history-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);font-size:12px}
+    .history-row small{color:var(--text-secondary)}
+    .empty-state{text-align:center;color:var(--text-muted);font-size:12px;padding:12px}
+    #app-root.focus-mode{max-width:680px;min-height:92vh;display:flex;flex-direction:column;justify-content:center}
+    #app-root.focus-mode .svg-container{max-width:310px}
+    #app-root.focus-mode #ring-time{font-size:52px!important}
+    .modal-card.wide{max-width:460px}
+    .setting-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;font-size:12px}
+    .setting-row input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+    .mini-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+    .mini-metric{padding:10px;border:1px solid var(--border);border-radius:12px;text-align:center}
+    .mini-metric b{display:block;font-size:16px;color:var(--accent)}
+    .mini-metric span{font-size:10px;color:var(--text-secondary)}
+    .category-actions{display:flex;align-items:center;gap:4px;margin-inline-start:4px}
+    .category-action{width:22px;height:22px;padding:0;border:0;border-radius:50%;font-size:12px;background:transparent;color:inherit}
+    .category-action:hover{background:rgba(99,102,241,.14);color:var(--accent)}
+    .field-hint{font-size:11px;line-height:1.6;color:var(--text-secondary);margin:6px 0 0}
+    .color-code-row{display:flex;gap:8px;align-items:center}
+    .color-code-row input[type=text]{flex:1;min-width:0;text-transform:uppercase}
+    .modal-help{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:14px;font-size:11px;line-height:1.8;color:var(--text-secondary)}
+
+    @media(max-width:480px){.quick-stats-grid{gap:5px}.quick-stat strong{font-size:16px}}
+
+    @media (max-width: 480px) {
+      body { padding: 0.5rem; }
+      #app-root { padding: 1.25rem 1rem; }
+      #ring-time { font-size: 32px !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-root" dir="rtl">
+
+  <!-- Header -->
+  <div class="hide-in-focus" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <i class="ti ti-scale" style="font-size:24px; color:var(--accent);"></i>
+      <h2 id="app-title" style="margin:0; font-size:20px; font-weight:700;">Time Balance</h2>
+      <div class="streak-badge" id="streak-container" title="سلسلة الأيام المستمرة">
+        <i class="ti ti-flame"></i> <span id="streak-count">0</span>
+      </div>
+    </div>
+    
+    <div style="display:flex; gap:6px;">
+      <button id="focus-toggle-btn" title="وضع التركيز الصافي" style="width:38px; height:38px; padding:0; border-radius:50%;">
+        <i class="ti ti-maximize" style="font-size:18px;"></i>
+      </button>
+      <button id="stats-toggle-btn" title="الإحصائيات" style="width:38px; height:38px; padding:0; border-radius:50%;">
+        <i class="ti ti-chart-bar" style="font-size:18px;"></i>
+      </button>
+      <button id="settings-btn" aria-label="الإعدادات" style="width:38px; height:38px; padding:0; border-radius:50%;">
+        <i class="ti ti-settings" style="font-size:18px;"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Statistics & Daily Progress -->
+  <div class="hide-in-focus">
+    <div class="quick-stats-grid">
+      <div class="quick-stat"><strong id="quick-today">0 دقيقة</strong><span id="quick-today-label">إنجاز اليوم</span></div>
+      <div class="quick-stat"><strong id="quick-sessions">0</strong><span id="quick-sessions-label">جلسات مكتملة</span></div>
+      <div class="quick-stat"><strong id="quick-streak">0</strong><span id="quick-streak-label">أيام متتالية</span></div>
+    </div>
+    <div class="daily-progress">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:600;">
+        <span id="daily-progress-title">التقدم اليومي</span><span id="daily-goal-label">0 / 120 دقيقة</span>
+      </div>
+      <div class="progress-track"><div id="daily-progress-fill" class="progress-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Pomodoro Quick Selectors -->
+  <div class="hide-in-focus" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem;">
+    <button class="pomo-btn active" data-pomo="25">تركيز (25د)</button>
+    <button class="pomo-btn" data-pomo="5"> راحة قصيرة (5د)</button>
+    <button class="pomo-btn" data-pomo="15"> راحة طويلة (15د)</button>
+    <button class="pomo-btn" id="custom-time-btn"> وقت مخصص</button>
+  </div>
+
+  <!-- Stats Panel -->
+  <div id="stats-panel" class="stats-panel hide-in-focus">
+    <h3 style="margin:0 0 0.5rem 0; font-size:15px;" id="stats-title">إحصائيات الأسبوع</h3>
+    <canvas id="weeklyChart"></canvas>
+    <div style="display:flex; justify-content:space-between; margin-top:1rem; text-align:center;">
+      <div>
+        <div style="font-size:18px; font-weight:bold; color:var(--accent);" id="total-week-time">0 دقيقة</div>
+        <div style="font-size:11px; color:var(--text-secondary);" id="label-week-total">إجمالي الأسبوع</div>
+      </div>
+      <div>
+        <div style="font-size:18px; font-weight:bold; color:#059669;" id="best-day">-</div>
+        <div style="font-size:11px; color:var(--text-secondary);" id="label-best-day">أفضل يوم</div>
+      </div>
+      <div>
+        <div style="font-size:18px; font-weight:bold; color:#d97706;" id="avg-session">0 دقيقة</div>
+        <div style="font-size:11px; color:var(--text-secondary);" id="label-avg-session">متوسط الجلسة</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div id="settings-panel" class="hide-in-focus" style="display:none; background:var(--surface-2); border-radius:var(--radius); padding:1.25rem; margin-bottom:1.5rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+      <span id="settings-title" style="font-weight:600; font-size:15px;">الإعدادات والتخصيص</span>
+      <button id="settings-close" style="width:28px; height:28px; padding:0; border-radius:50%; border:none;">
+        <i class="ti ti-x" style="font-size:16px;"></i>
+      </button>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom:1.25rem;">
+      <div style="flex:1;">
+        <p id="lang-label" style="font-size:12px; color:var(--text-secondary); margin:0 0 6px; font-weight:500;">اللغة / Language</p>
+        <div style="display:flex; gap:4px;">
+          <button id="lang-ar" style="flex:1; padding:6px 8px; font-size:12px;">العربية</button>
+          <button id="lang-en" style="flex:1; padding:6px 8px; font-size:12px;">English</button>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <p id="mode-label" style="font-size:12px; color:var(--text-secondary); margin:0 0 6px; font-weight:500;">النمط / Theme</p>
+        <div style="display:flex; gap:4px;">
+          <button id="mode-light" style="flex:1; padding:6px 8px; font-size:12px;"><i class="ti ti-sun"></i> فاتح</button>
+          <button id="mode-dark" style="flex:1; padding:6px 8px; font-size:12px;"><i class="ti ti-moon"></i> داكن</button>
+        </div>
+      </div>
+    </div>
+
+    <p id="theme-label" style="font-size:13px; color:var(--text-secondary); margin:0 0 8px; font-weight:500;">ألوان الفئات والثيمات</p>
+    <div id="theme-swatches" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1rem;"></div>
+
+    <p id="custom-label" style="font-size:13px; color:var(--text-secondary); margin:0 0 8px; font-weight:500;">لون مخصص</p>
+    <input type="color" id="custom-color" value="#6366f1" style="width:100%; height:38px; padding:2px; border-radius:8px; border:1px solid var(--border); background:transparent; cursor:pointer;">
+    <div class="setting-row"><label for="alert-before-end">تنبيه قبل نهاية الجلسة</label><input id="alert-before-end" type="checkbox" checked></div>
+    <div class="setting-row"><label for="auto-break">بدء الراحة تلقائياً بعد الجلسة</label><input id="auto-break" type="checkbox"></div>
+    <div class="setting-row"><label for="break-duration">مدة الراحة التلقائية (دقائق)</label><input id="break-duration" type="number" min="1" max="60" value="5" style="width:85px;padding:7px;"></div>
+    <button id="return-home-btn" style="width:100%; margin-top:14px; color:var(--accent); border-color:var(--accent);">
+      <i class="ti ti-home"></i><span id="return-home-label">العودة للحالة الرئيسية</span>
+    </button>
+  </div>
+
+  <!-- Category Selector -->
+  <div class="hide-in-focus" style="margin-bottom: 1rem;">
+    <p id="cat-label" style="font-size: 12px; color: var(--text-secondary); margin: 0 0 8px 0; font-weight: 600;">اختر فئة النشاط الحالية:</p>
+    <div id="categories-wrapper">
+      <button id="open-cat-modal-btn" class="add-category-btn" title="إضافة فئة مخصصة"><i class="ti ti-plus"></i> إضافة فئة</button>
+    </div>
+  </div>
+
+  <!-- Timer & Circular Dial -->
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0.5rem 0;">
+    
+    <div class="svg-container">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="84" fill="none" stroke="var(--border)" stroke-width="12"></circle>
+        <circle id="ring-progress" cx="100" cy="100" r="84" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" transform="rotate(-90 100 100)" style="transition: stroke-dashoffset 0.5s linear, stroke 0.3s ease;"></circle>
+      </svg>
+      <div style="position:absolute; text-align:center;">
+        <span id="ring-time" style="font-size:38px; font-weight:700; letter-spacing:-1px; color:var(--text-primary); font-variant-numeric: tabular-nums;">25:00</span>
+        <div id="category-label-display" style="font-size:12px; color:var(--text-secondary); font-weight:600; margin-top:2px;">دراسة</div>
+      </div>
+    </div>
+
+    <div class="hide-in-focus" style="display: flex; gap: 8px; margin: 1rem 0 0.8rem;">
+      <button id="sub-5-btn" style="padding: 4px 10px; font-size: 12px; border-radius:12px;"><i class="ti ti-minus"></i> 5د</button>
+      <button id="add-5-btn" style="padding: 4px 10px; font-size: 12px; border-radius:12px;"><i class="ti ti-plus"></i> 5د</button>
+    </div>
+
+    <div class="hide-in-focus" style="display:flex; gap:6px; margin-bottom:1.25rem; align-items:center;">
+      <button class="sound-chip" data-sound="rain" style="padding:4px 10px; font-size:11px; border-radius:14px;"><i class="ti ti-cloud-rain"></i> مطر</button>
+      <button class="sound-chip" data-sound="waves" style="padding:4px 10px; font-size:11px; border-radius:14px;"><i class="ti ti-waves"></i> أمواج</button>
+      <button class="sound-chip active" data-sound="off" style="padding:4px 10px; font-size:11px; border-radius:14px;"><i class="ti ti-volume-3"></i> صامت</button>
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:center; width:100%;">
+      <button id="start-btn" class="btn-accent" style="flex:2;"><i class="ti ti-player-play"></i><span id="start-label">ابدأ الجلسة</span></button>
+      <button id="pause-btn" style="flex:1;"><i class="ti ti-player-pause"></i><span id="pause-label">إيقاف</span></button>
+      <button id="reset-btn" style="flex:1;"><i class="ti ti-refresh"></i><span id="reset-label">إعادة</span></button>
+    </div>
+
+    <button id="exit-focus-btn" style="display:none; margin-top:1rem; background:transparent; border:none; color:var(--text-secondary); font-size:13px;">
+      <i class="ti ti-lock"></i> <span id="exit-focus-text">الخروج من وضع التركيز (اضغط مطولاً)</span>
+    </button>
+
+    <div class="hide-in-focus" style="width: 100%; margin-top: 1.25rem; background: var(--surface-2); padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px;">
+        <span id="balance-title">إجمالي إنجاز اليوم:</span>
+        <span id="total-time-count" style="color: var(--accent);">0 دقيقة</span>
+      </div>
+      <div style="width:100%; height:6px; background:var(--border); border-radius:3px; overflow:hidden;">
+        <div id="balance-bar-fill" style="width:0%; height:100%; background:var(--accent); transition:width 0.3s ease;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- To-Do Accordion -->
+  <div class="accordion-item hide-in-focus">
+    <button id="todo-header" class="accordion-header">
+      <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;">
+        <i class="ti ti-checkbox" style="font-size:18px; color:var(--accent);"></i>
+        <span id="todo-title">قائمة المهام</span>
+      </span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span id="todo-percent" style="font-size:12px; color:var(--text-muted); font-weight:600;">0%</span>
+        <i id="todo-chevron" class="ti ti-chevron-down accordion-chevron" style="font-size:18px;"></i>
+      </div>
+    </button>
+    <div id="todo-body" class="accordion-body">
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <input type="text" id="todo-input" placeholder="اكتب مهمة جديدة..." style="flex:1;">
+        <button id="todo-add" class="btn-accent" aria-label="إضافة"><i class="ti ti-plus"></i></button>
+      </div>
+      <ul id="todo-list" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;"></ul>
+    </div>
+  </div>
+
+  <!-- Notes Accordion -->
+  <div class="accordion-item hide-in-focus">
+    <button id="notes-header" class="accordion-header">
+      <span style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;">
+        <i class="ti ti-notes" style="font-size:18px; color:var(--accent);"></i>
+        <span id="notes-title">الملاحظات والأفكار</span>
+      </span>
+      <i id="notes-chevron" class="ti ti-chevron-down accordion-chevron" style="font-size:18px;"></i>
+    </button>
+    <div id="notes-body" class="accordion-body">
+      <textarea id="notes-area" placeholder="دون ملاحظاتك السريعة هنا..." style="width:100%; min-height:120px; resize:vertical; font-size:14px; line-height:1.6;"></textarea>
+    </div>
+  </div>
+
+  <!-- Session History -->
+  <div class="accordion-item hide-in-focus">
+    <button id="history-header" class="accordion-header">
+      <span style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;">
+        <i class="ti ti-history" style="font-size:18px;color:var(--accent);"></i>
+        <span>سجل الجلسات</span>
+      </span>
+      <i id="history-chevron" class="ti ti-chevron-down accordion-chevron" style="font-size:18px;"></i>
+    </button>
+    <div id="history-body" class="accordion-body">
+      <div id="history-list"></div>
+      <button id="clear-history-btn" style="margin-top:10px;width:100%;font-size:12px;color:var(--text-danger);">مسح السجل</button>
+    </div>
+  </div>
+
+  <footer style="text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);">
+    <span id="credits-label">صُنع بواسطة</span> <b>abood shalash</b> · <span>shlshb738@gmail.com</span>
+  </footer>
+
+</div>
+
+<!-- Session Completed Modal -->
+<div id="session-end-modal" class="modal-overlay">
+  <div class="modal-card wide" style="text-align:center;">
+    <div style="font-size:42px;margin-bottom:8px;"></div>
+    <h3 style="margin:0 0 8px;">انتهت الجلسة!</h3>
+    <p id="session-end-message" style="font-size:13px;color:var(--text-secondary);margin:0 0 16px;">أحسنت، لقد أنجزت جلسة تركيز.</p>
+    <div class="mini-metrics">
+      <div class="mini-metric"><b id="end-duration">25د</b><span>مدة الجلسة</span></div>
+      <div class="mini-metric"><b id="end-total">0 دقيقة</b><span>إجمالي اليوم</span></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button id="start-break-btn" class="btn-accent" style="flex:1;">ابدأ الراحة</button>
+      <button id="close-end-btn" style="flex:1;">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Dialog for Creating Custom Category -->
+<div id="cat-modal" class="modal-overlay">
+  <div class="modal-card">
+    <h3 id="modal-title" style="margin:0 0 1rem 0; font-size:16px;">إضافة/تعديل فئة تركيز</h3>
+    
+    <div id="category-help" class="modal-help">
+      أنشئ فئة واضحة لنشاطك. يمكنك اختيار اسم بالعربية والإنجليزية، وتحديد لون مخصص، ثم تعديل الفئة لاحقاً من زر التعديل.
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <label id="modal-label-name-ar" style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px; font-weight:600;">اسم الفئة بالعربية:</label>
+      <input type="text" id="new-cat-name-ar" placeholder="مثلاً: رياضيات أو برمجة" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <label id="modal-label-name-en" style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px; font-weight:600;">اسم الفئة بالإنجليزية:</label>
+      <input type="text" id="new-cat-name-en" placeholder="e.g. Math or Coding" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <label id="modal-label-color" style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px; font-weight:600;">لون الفئة:</label>
+      <div class="color-code-row">
+        <input type="color" id="new-cat-color" value="#6366f1" style="width:52px; height:38px; padding:2px; border:1px solid var(--border); border-radius:8px; background:transparent; cursor:pointer;">
+        <input type="text" id="new-cat-color-code" value="#6366F1" maxlength="7" placeholder="#6366F1" aria-label="Hex color code">
+      </div>
+      <p id="color-hint" class="field-hint">استخدم كود HEX مثل #6366F1. سيتم التحقق من صحة الكود قبل الحفظ.</p>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <label id="modal-label-icon" style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">اختر أيقونة الفئة:</label>
+      <div id="icon-selector" class="icon-selector-grid"></div>
+    </div>
+
+    <div style="display:flex; gap:8px; justify-content:space-between; align-items:center;">
+      <button id="modal-delete-cat-btn" style="border:none; background:rgba(239, 68, 68, 0.1); color:var(--text-danger); display:none; padding:8px 12px; border-radius:12px; font-size:12px; font-weight:600;"><i class="ti ti-trash"></i> حذف الفئة</button>
+      <div style="display:flex; gap:8px; margin-right:auto;">
+        <button id="cancel-cat-btn" style="border:none; background:transparent; color:var(--text-secondary);">إلغاء</button>
+        <button id="save-cat-btn" class="btn-accent">حفظ وإنشاء</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Dialog for Custom Time Input -->
+<div id="custom-time-modal" class="modal-overlay">
+  <div class="modal-card">
+    <h3 style="margin:0 0 1rem 0; font-size:16px;">تحديد وقت مخصص للمؤقت</h3>
+    
+    <div style="display:flex; gap:10px; margin-bottom:1rem;">
+      <div style="flex:1;">
+        <label style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px; font-weight:600;">الساعات:</label>
+        <input type="number" id="custom-hours" min="0" max="24" value="0" style="width:100%;">
+      </div>
+      <div style="flex:1;">
+        <label style="display:block; font-size:12px; color:var(--text-secondary); margin-bottom:4px; font-weight:600;">الدقائق:</label>
+        <input type="number" id="custom-minutes" min="0" max="59" value="45" style="width:100%;">
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button id="cancel-custom-time-btn" style="border:none; background:transparent; color:var(--text-secondary);">إلغاء</button>
+      <button id="apply-custom-time-btn" class="btn-accent">تطبيق الوقت</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  const root = document.getElementById('app-root');
+  let lang = localStorage.getItem('tb_lang') || 'ar';
+  let currentAccent = localStorage.getItem('tb_theme') || '#6366f1';
+  let totalMinutesFocused = parseInt(localStorage.getItem('tb_total_minutes') || '0');
+  let isDarkMode = localStorage.getItem('tb_dark_mode') === 'true';
+
+  let weeklyData = JSON.parse(localStorage.getItem('tb_weekly_stats')) || [0, 0, 0, 0, 0, 0, 0];
+  let completedSessions = parseInt(localStorage.getItem('tb_completed_sessions') || '0');
+  let sessionHistory = JSON.parse(localStorage.getItem('tb_session_history') || '[]');
+  let alertBeforeEnd = localStorage.getItem('tb_alert_before_end') !== 'false';
+  let autoBreak = localStorage.getItem('tb_auto_break') === 'true';
+  let breakDuration = parseInt(localStorage.getItem('tb_break_duration') || '5');
+  let alertSent = false;
+  let currentSessionStartedAt = null;
+
+  // Streak Tracker
+  let streak = parseInt(localStorage.getItem('tb_streak') || '0');
+  let lastActiveDate = localStorage.getItem('tb_last_active') || '';
+
+  function updateStreak() {
+    const today = new Date().toDateString();
+    if (lastActiveDate !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (lastActiveDate === yesterday.toDateString()) {
+        streak++;
+      } else if (!lastActiveDate) {
+        streak = 1;
+      }
+      lastActiveDate = today;
+      localStorage.setItem('tb_streak', streak);
+      localStorage.setItem('tb_last_active', lastActiveDate);
+    }
+    document.getElementById('streak-count').textContent = streak;
+  }
+  updateStreak();
+
+  // 1. اختصار تسميات الفئات الأساسية إلى كلمة واحدة فقط[cite: 5]
+  const defaultCategories = [
+    { id: '1', name_ar: 'دراسة', name_en: 'Study', color: '#6366f1', icon: 'ti-book', isCustom: false },
+    { id: '2', name_ar: 'قراءة', name_en: 'Reading', color: '#059669', icon: 'ti-bookmarks', isCustom: false },
+    { id: '3', name_ar: 'عمل', name_en: 'Work', color: '#2563eb', icon: 'ti-code', isCustom: false },
+    { id: '4', name_ar: 'راحة', name_en: 'Rest', color: '#d97706', icon: 'ti-cup', isCustom: false }
+  ];
+
+  let categories = JSON.parse(localStorage.getItem('tb_categories')) || defaultCategories;
+
+  const availableIcons = [
+    'ti-book', 'ti-bookmarks', 'ti-code', 'ti-cup', 'ti-briefcase', 'ti-pencil', 
+    'ti-bulb', 'ti-calculator', 'ti-brain', 'ti-device-laptop', 'ti-palette', 
+    'ti-music', 'ti-run', 'ti-heart', 'ti-star'
+  ];
+
+  const T = {
+    ar: {
+      settings: 'الإعدادات والتخصيص', credits: 'صُنع بواسطة', lang: 'اللغة / Language', theme: 'ألوان الفئات والثيمات', custom: 'لون مخصص',
+      mode: 'النمط / Theme', catLabel: 'اختر فئة النشاط الحالية:', start: 'ابدأ الجلسة', pause: 'إيقاف', reset: 'إعادة',
+      todo: 'قائمة المهام', addPh: 'اكتب مهمة جديدة...', notes: 'الملاحظات والأفكار', notesPh: 'دون ملاحظاتك السريعة هنا...',
+      balanceTitle: 'إجمالي إنجاز اليوم:', totalMin: ' دقيقة',
+      statsTitle: 'إحصائيات الأسبوع', weekTotal: 'إجمالي الأسبوع', bestDay: 'أفضل يوم', avgSession: 'متوسط الجلسة',
+      modalTitle: 'إضافة/تعديل فئة تركيز', modalNameAr: 'اسم الفئة بالعربية:', modalNameEn: 'اسم الفئة بالإنجليزية:', modalColor: 'لون الفئة:', modalIcon: 'اختر أيقونة الفئة:',
+      modalPhAr: 'مثلاً: رياضيات أو برمجة', modalPhEn: 'مثلاً: Math or Coding', colorHint: 'استخدم كود HEX مثل #6366F1. سيتم التحقق من صحة الكود قبل الحفظ.', categoryHelp: 'أنشئ فئة واضحة لنشاطك. يمكنك اختيار اسم بالعربية والإنجليزية، وتحديد لون مخصص، ثم تعديل الفئة لاحقاً من زر التعديل.', save: 'حفظ وإنشاء', cancel: 'إلغاء',
+      days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], today: 'إنجاز اليوم', sessions: 'جلسات مكتملة', streakLabel: 'أيام متتالية', daily: 'التقدم اليومي', pomoFocus: 'تركيز', shortBreak: 'راحة قصيرة', longBreak: 'راحة طويلة', customTime: 'وقت مخصص', rain: 'مطر', waves: 'أمواج', silent: 'صامت', returnHome: 'العودة للحالة الرئيسية'
+    },
+    en: {
+      settings: 'Settings & Themes', credits: 'Created by', lang: 'Language / اللغة', theme: 'Category Themes', custom: 'Custom Color',
+      mode: 'Theme Mode', catLabel: 'Current Activity Category:', start: 'Start Session', pause: 'Pause', reset: 'Reset',
+      todo: 'Task List', addPh: 'Type a new task...', notes: 'Notes & Ideas', notesPh: 'Write your quick notes here...',
+      balanceTitle: 'Today\'s Total Focus:', totalMin: ' min',
+      statsTitle: 'Weekly Statistics', weekTotal: 'Weekly Total', bestDay: 'Best Day', avgSession: 'Avg Session',
+      modalTitle: 'Add/Edit Focus Category', modalNameAr: 'Arabic category name:', modalNameEn: 'English category name:', modalColor: 'Category color:', modalIcon: 'Select category icon:',
+      modalPhAr: 'e.g. Mathematics or Coding', modalPhEn: 'e.g. Math or Coding', colorHint: 'Use a HEX code such as #6366F1. The code is validated before saving.', categoryHelp: 'Create a clear category for your activity. Choose Arabic and English names, set a custom color, and edit the category later using the edit button.', save: 'Create Category', cancel: 'Cancel',
+      days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], today: 'Today', sessions: 'Completed sessions', streakLabel: 'Day streak', daily: 'Daily progress', pomoFocus: 'Focus', shortBreak: 'Short break', longBreak: 'Long break', customTime: 'Custom time', rain: 'Rain', waves: 'Waves', silent: 'Silent', returnHome: 'Return to home state'
+    }
+  };
+
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission();
+  }
+
+  function applyThemeMode() {
+    if (isDarkMode) document.body.classList.add('dark-mode');
+    else document.body.classList.remove('dark-mode');
+    localStorage.setItem('tb_dark_mode', isDarkMode);
+    renderChart();
+  }
+
+  document.getElementById('mode-light').onclick = () => { isDarkMode = false; applyThemeMode(); };
+  document.getElementById('mode-dark').onclick = () => { isDarkMode = true; applyThemeMode(); };
+
+  function applyLang(){
+    const t = T[lang];
+    root.setAttribute('dir', lang==='ar' ? 'rtl' : 'ltr');
+    document.getElementById('settings-title').textContent = t.settings;
+    document.getElementById('credits-label').textContent = t.credits;
+    document.getElementById('lang-label').textContent = t.lang;
+    document.getElementById('mode-label').textContent = t.mode;
+    document.getElementById('theme-label').textContent = t.theme;
+    document.getElementById('custom-label').textContent = t.custom;
+    document.getElementById('cat-label').textContent = t.catLabel;
+    document.getElementById('start-label').textContent = t.start;
+    document.getElementById('pause-label').textContent = t.pause;
+    document.getElementById('reset-label').textContent = t.reset;
+    document.getElementById('return-home-label').textContent = t.returnHome;
+    document.getElementById('quick-today-label').textContent = t.today;
+    document.getElementById('quick-sessions-label').textContent = t.sessions;
+    document.getElementById('quick-streak-label').textContent = t.streakLabel;
+    document.getElementById('daily-progress-title').textContent = t.daily;
+    document.querySelector('[data-pomo="25"]').textContent = t.pomoFocus + ' (25m)';
+    document.querySelector('[data-pomo="5"]').textContent = t.shortBreak + ' (5m)';
+    document.querySelector('[data-pomo="15"]').textContent = t.longBreak + ' (15m)';
+    document.getElementById('custom-time-btn').textContent = t.customTime;
+    document.querySelector('[data-sound="rain"]').innerHTML = '<i class="ti ti-cloud-rain"></i> ' + t.rain;
+    document.querySelector('[data-sound="waves"]').innerHTML = '<i class="ti ti-waves"></i> ' + t.waves;
+    document.querySelector('[data-sound="off"]').innerHTML = '<i class="ti ti-volume-3"></i> ' + t.silent;
+    document.getElementById('todo-title').textContent = t.todo;
+    document.getElementById('todo-input').placeholder = t.addPh;
+    document.getElementById('notes-title').textContent = t.notes;
+    document.getElementById('notes-area').placeholder = t.notesPh;
+    document.getElementById('balance-title').textContent = t.balanceTitle;
+    document.getElementById('stats-title').textContent = t.statsTitle;
+    document.getElementById('label-week-total').textContent = t.weekTotal;
+    document.getElementById('label-best-day').textContent = t.bestDay;
+    document.getElementById('label-avg-session').textContent = t.avgSession;
+    
+    document.getElementById('modal-title').textContent = t.modalTitle;
+    document.getElementById('modal-label-name-ar').textContent = t.modalNameAr;
+    document.getElementById('modal-label-name-en').textContent = t.modalNameEn;
+    document.getElementById('modal-label-color').textContent = t.modalColor;
+    document.getElementById('modal-label-icon').textContent = t.modalIcon;
+    document.getElementById('new-cat-name-ar').placeholder = t.modalPhAr;
+    document.getElementById('new-cat-name-en').placeholder = t.modalPhEn;
+    document.getElementById('color-hint').textContent = t.colorHint;
+    document.getElementById('category-help').textContent = t.categoryHelp;
+    document.getElementById('save-cat-btn').textContent = editingCategoryId ? (lang === 'ar' ? 'حفظ التعديلات' : 'Save Changes') : t.save;
+    document.getElementById('cancel-cat-btn').textContent = t.cancel;
+
+    updateTotalBalanceDisplay();
+    updateStatsSummary();
+    renderCategories();
+    renderChart();
+  }
+
+  function updateDashboard() {
+    const today = new Date().toDateString();
+    const todayMinutes = sessionHistory.filter(s => s.date === today && s.type === 'focus')
+      .reduce((sum, s) => sum + s.minutes, 0);
+    document.getElementById('quick-today').textContent = todayMinutes + 'د';
+    document.getElementById('quick-sessions').textContent = completedSessions;
+    document.getElementById('quick-streak').textContent = streak;
+    document.getElementById('daily-goal-label').textContent = `${todayMinutes} / 120 دقيقة`;
+    document.getElementById('daily-progress-fill').style.width = Math.min(100, todayMinutes / 120 * 100) + '%';
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('history-list');
+    if (!sessionHistory.length) {
+      list.innerHTML = '<div class="empty-state">لا توجد جلسات مسجلة بعد.</div>';
+      return;
+    }
+    list.innerHTML = sessionHistory.slice(0, 20).map(item => `
+      <div class="history-row" style="margin-bottom:8px;">
+        <div><b>${item.category}</b><br><small>${item.dateLabel}</small></div>
+        <div style="text-align:left;"><b>${item.minutes}د</b><br><small>${item.type === 'break' ? 'راحة' : 'تركيز'}</small></div>
+      </div>`).join('');
+  }
+
+  function recordSession(minutes, type='focus') {
+    const now = new Date();
+    sessionHistory.unshift({
+      category: lang === 'ar' ? selectedCategory.name_ar : selectedCategory.name_en,
+      minutes: Math.max(1, Math.round(minutes)),
+      type,
+      date: now.toDateString(),
+      dateLabel: now.toLocaleString(lang === 'ar' ? 'ar-JO' : 'en-US', {dateStyle:'short', timeStyle:'short'})
+    });
+    sessionHistory = sessionHistory.slice(0, 100);
+    localStorage.setItem('tb_session_history', JSON.stringify(sessionHistory));
+    renderHistory();
+    updateDashboard();
+  }
+
+  function showSessionEndModal(minutes) {
+    document.getElementById('end-duration').textContent = Math.round(minutes) + 'د';
+    document.getElementById('end-total').textContent = totalMinutesFocused + 'د';
+    document.getElementById('session-end-modal').classList.add('active');
+  }
+
+  function closeSessionEndModal() {
+    document.getElementById('session-end-modal').classList.remove('active');
+  }
+
+  function maybeAlertBeforeEnd() {
+    if (alertBeforeEnd && !alertSent && timeLeft > 0 && timeLeft <= 60) {
+      alertSent = true;
+      playAlarmSound();
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('⏳ تنبيه', {body: lang === 'ar' ? 'تبقى أقل من دقيقة على نهاية الجلسة.' : 'Less than one minute remains.'});
+      }
+    }
+  }
+
+  function updateTotalBalanceDisplay(){
+    document.getElementById('total-time-count').textContent = totalMinutesFocused + T[lang].totalMin;
+    const progressPercent = Math.min(100, Math.round((totalMinutesFocused / 120) * 100));
+    document.getElementById('balance-bar-fill').style.width = progressPercent + '%';
+  }
+
+  // Audio Alerts & Ambient Generator
+  let audioCtx = null;
+  let ambientNoiseNode = null;
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playAlarmSound() {
+    try {
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); 
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.8);
+    } catch(e) {}
+  }
+
+  function stopAmbientSound() {
+    if (ambientNoiseNode) {
+      try { ambientNoiseNode.stop(); } catch(e) {}
+      ambientNoiseNode = null;
+    }
+  }
+
+  function playAmbientSound(type) {
+    stopAmbientSound();
+    if (type === 'off') return;
+    initAudio();
+
+    const bufferSize = audioCtx.sampleRate * 2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = type === 'rain' ? 'lowpass' : 'bandpass';
+    filter.frequency.value = type === 'rain' ? 1000 : 400;
+
+    const gain = audioCtx.createGain();
+    gain.gain.value = 0.03;
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    noise.start();
+    ambientNoiseNode = noise;
+  }
+
+  document.querySelectorAll('.sound-chip').forEach(chip => {
+    chip.onclick = () => {
+      document.querySelectorAll('.sound-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      playAmbientSound(chip.getAttribute('data-sound'));
+    };
+  });
+
+  function sendNotification() {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Time Balance', {
+        body: lang === 'ar' ? 'انتهت جلسة التركيز! حان وقت الاستراحة.' : 'Session ended! Time for a break.',
+        icon: 'https://cdn-icons-png.flaticon.com/512/8046/8046947.png'
+      });
+    }
+  }
+
+  // Modals & Panels
+  const focusBtn = document.getElementById('focus-toggle-btn');
+  const exitFocusBtn = document.getElementById('exit-focus-btn');
+  focusBtn.onclick = () => { root.classList.add('focus-mode'); exitFocusBtn.style.display = 'inline-flex'; };
+  
+  // Strict Exit Lock
+  let exitHoldTimer = null;
+  exitFocusBtn.onmousedown = exitFocusBtn.ontouchstart = () => {
+    let secondsLeft = 3;
+    document.getElementById('exit-focus-text').textContent = `انتظر (${secondsLeft}ث)...`;
+    exitHoldTimer = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) {
+        clearInterval(exitHoldTimer);
+        root.classList.remove('focus-mode');
+        exitFocusBtn.style.display = 'none';
+        document.getElementById('exit-focus-text').textContent = 'الخروج من وضع التركيز (اضغط مطولاً)';
+      } else {
+        document.getElementById('exit-focus-text').textContent = `انتظر (${secondsLeft}ث)...`;
+      }
+    }, 1000);
+  };
+
+  exitFocusBtn.onmouseup = exitFocusBtn.ontouchend = () => {
+    clearInterval(exitHoldTimer);
+    document.getElementById('exit-focus-text').textContent = 'الخروج من وضع التركيز (اضغط مطولاً)';
+  };
+
+  const settingsBtn = document.getElementById('settings-btn');
+  const settingsPanel = document.getElementById('settings-panel');
+  settingsBtn.onclick = ()=>{ settingsPanel.style.display = settingsPanel.style.display==='none' ? 'block' : 'none'; };
+  document.getElementById('settings-close').onclick = ()=>{ settingsPanel.style.display='none'; };
+
+  // Return the interface to its main/home state without deleting saved data.
+  document.getElementById('return-home-btn').onclick = () => {
+    const confirmed = confirm(
+      lang === 'ar'
+        ? 'هل تريد إعادة التطبيق لحالته الأصلية؟ سيتم حذف الفئات المخصصة وإرجاع الفئات الأساسية.'
+        : 'Restore the original state? Custom categories will be removed and default categories restored.'
+    );
+    if (!confirmed) return;
+
+    pauseTimer();
+    stopAmbientSound();
+    root.classList.remove('focus-mode');
+    exitFocusBtn.style.display = 'none';
+    statsPanel.classList.remove('visible');
+    settingsPanel.style.display = 'none';
+
+    // Restore the original default categories and remove all custom categories.
+    categories = defaultCategories.map(cat => ({ ...cat }));
+    selectedCategory = categories[0];
+    localStorage.setItem('tb_categories', JSON.stringify(categories));
+
+    // Restore the original timer and accent color.
+    setAccent('#6366f1');
+    document.documentElement.style.setProperty('--accent', '#6366f1');
+    document.getElementById('custom-color').value = '#6366f1';
+
+    document.querySelectorAll('.pomo-btn').forEach(b => b.classList.remove('active'));
+    const defaultPomo = document.querySelector('.pomo-btn[data-pomo="25"]');
+    if (defaultPomo) defaultPomo.classList.add('active');
+
+    setTimer(25);
+    renderCategories();
+    applyLang();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const statsBtn = document.getElementById('stats-toggle-btn');
+  const statsPanel = document.getElementById('stats-panel');
+  statsBtn.onclick = () => {
+    statsPanel.classList.toggle('visible');
+    if (statsPanel.classList.contains('visible')) renderChart();
+  };
+
+  document.getElementById('lang-ar').onclick = ()=>{ lang='ar'; localStorage.setItem('tb_lang', 'ar'); applyLang(); };
+  document.getElementById('lang-en').onclick = ()=>{ lang='en'; localStorage.setItem('tb_lang', 'en'); applyLang(); };
+
+  // Theme Switcher
+  const ringProgress = document.getElementById('ring-progress');
+  function setAccent(color){
+    currentAccent = color;
+    localStorage.setItem('tb_theme', color);
+    document.documentElement.style.setProperty('--accent', color);
+    ringProgress.setAttribute('stroke', color);
+    renderChart();
+  }
+
+  const themes = ['#6366f1', '#059669', '#2563eb', '#d97706', '#db2777', '#7c3aed'];
+  const swatchWrap = document.getElementById('theme-swatches');
+  themes.forEach(color => {
+    const sw = document.createElement('button');
+    sw.style.cssText = `width:30px; height:30px; border-radius:50%; padding:0; border:2px solid var(--border); background:${color};`;
+    sw.onclick = () => setAccent(color);
+    swatchWrap.appendChild(sw);
+  });
+  document.getElementById('custom-color').oninput = (e) => setAccent(e.target.value);
+
+  // Category Manager
+  let selectedCategory = categories[0] || defaultCategories[0];
+  let editingCategoryId = null;
+
+  function renderCategories() {
+    const wrapper = document.getElementById('categories-wrapper');
+    const addBtn = document.getElementById('open-cat-modal-btn');
+    wrapper.innerHTML = '';
+    
+    categories.forEach(cat => {
+      const chip = document.createElement('div');
+      chip.className = `category-chip ${cat.id === selectedCategory.id ? 'active' : ''}`;
+      
+      const catName = lang === 'ar' ? cat.name_ar : cat.name_en;
+      
+      chip.innerHTML = `<i class="ti ${cat.icon}"></i><span>${catName}</span>`;
+      
+      // إضافة أيقونة الحذف وتفعيلها بوضوح مع إضافة event.stopPropagation لمنع تداخل الأحداث
+      const actions = document.createElement('span');
+      actions.className = 'category-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'category-action';
+      editBtn.type = 'button';
+      editBtn.title = lang === 'ar' ? 'تعديل الفئة' : 'Edit category';
+      editBtn.innerHTML = '<i class="ti ti-pencil"></i>';
+      editBtn.onclick = (e) => {
+        e.stopPropagation();
+        openCategoryEditor(cat);
+      };
+      actions.appendChild(editBtn);
+
+      const delIcon = document.createElement('button');
+      delIcon.className = 'category-action delete-cat-icon';
+      delIcon.type = 'button';
+      delIcon.title = lang === 'ar' ? 'حذف الفئة' : 'Delete category';
+      delIcon.innerHTML = '<i class="ti ti-x"></i>';
+      delIcon.onclick = (e) => {
+        e.stopPropagation();
+        deleteCategory(cat.id);
+      };
+      actions.appendChild(delIcon);
+      chip.appendChild(actions);
+
+      chip.onclick = () => {
+        selectedCategory = cat;
+        setAccent(cat.color);
+        document.getElementById('category-label-display').textContent = catName;
+        renderCategories();
+      };
+
+      wrapper.appendChild(chip);
+    });
+
+    wrapper.appendChild(addBtn);
+    document.getElementById('category-label-display').textContent = lang === 'ar' ? selectedCategory.name_ar : selectedCategory.name_en;
+  }
+
+  function deleteCategory(catId) {
+    if (categories.length <= 1) {
+      alert(lang === 'ar' ? 'يجب الإبقاء على فئة واحدة على الأقل!' : 'You must keep at least one category!');
+      return;
+    }
+    categories = categories.filter(c => c.id !== catId);
+    localStorage.setItem('tb_categories', JSON.stringify(categories));
+    if (selectedCategory.id === catId) {
+      selectedCategory = categories[0];
+      setAccent(selectedCategory.color);
+    }
+    renderCategories();
+  }
+
+  // Icon Selector
+  let selectedIcon = availableIcons[0];
+  function renderIconSelector() {
+    const grid = document.getElementById('icon-selector');
+    grid.innerHTML = '';
+    availableIcons.forEach(icon => {
+      const opt = document.createElement('div');
+      opt.className = `icon-option ${icon === selectedIcon ? 'selected' : ''}`;
+      opt.innerHTML = `<i class="ti ${icon}"></i>`;
+      opt.onclick = () => {
+        selectedIcon = icon;
+        renderIconSelector();
+      };
+      grid.appendChild(opt);
+    });
+  }
+
+  const catModal = document.getElementById('cat-modal');
+  const modalDeleteBtn = document.getElementById('modal-delete-cat-btn');
+
+  function openCategoryEditor(cat = null) {
+    editingCategoryId = cat ? cat.id : null;
+    document.getElementById('new-cat-name-ar').value = cat ? (cat.name_ar || '') : '';
+    document.getElementById('new-cat-name-en').value = cat ? (cat.name_en || cat.name_ar || '') : '';
+    document.getElementById('new-cat-color').value = cat ? cat.color : '#6366f1';
+    document.getElementById('new-cat-color-code').value = (cat ? cat.color : '#6366f1').toUpperCase();
+    selectedIcon = cat ? (cat.icon || availableIcons[0]) : availableIcons[0];
+    modalDeleteBtn.style.display = cat ? 'inline-flex' : 'none';
+    document.getElementById('save-cat-btn').textContent = lang === 'ar' ? (cat ? 'حفظ التعديلات' : 'حفظ وإنشاء') : (cat ? 'Save Changes' : 'Create Category');
+    renderIconSelector();
+    catModal.classList.add('active');
+  }
+
+  document.getElementById('open-cat-modal-btn').onclick = () => openCategoryEditor();
+
+  document.getElementById('cancel-cat-btn').onclick = () => catModal.classList.remove('active');
+
+  const colorPicker = document.getElementById('new-cat-color');
+  const colorCodeInput = document.getElementById('new-cat-color-code');
+  colorPicker.oninput = () => { colorCodeInput.value = colorPicker.value.toUpperCase(); };
+  colorCodeInput.oninput = () => {
+    const value = colorCodeInput.value.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(value)) colorPicker.value = value;
+  };
+
+  document.getElementById('save-cat-btn').onclick = () => {
+    const nameAr = document.getElementById('new-cat-name-ar').value.trim();
+    const nameEn = document.getElementById('new-cat-name-en').value.trim();
+    const color = colorCodeInput.value.trim().toUpperCase();
+
+    if (!nameAr || !nameEn) {
+      alert(lang === 'ar' ? 'يرجى إدخال اسم الفئة بالعربية والإنجليزية.' : 'Please enter both Arabic and English names.');
+      return;
+    }
+    if (!/^#[0-9A-F]{6}$/.test(color)) {
+      alert(lang === 'ar' ? 'أدخل كود لون HEX صحيحاً مثل #6366F1.' : 'Enter a valid HEX color code such as #6366F1.');
+      return;
+    }
+
+    if (editingCategoryId) {
+      const cat = categories.find(c => c.id === editingCategoryId);
+      if (cat) {
+        cat.name_ar = nameAr;
+        cat.name_en = nameEn;
+        cat.color = color;
+        cat.icon = selectedIcon;
+        if (selectedCategory.id === cat.id) setAccent(color);
+      }
+    } else {
+      const newCat = {
+        id: Date.now().toString(),
+        name_ar: nameAr,
+        name_en: nameEn,
+        color: color,
+        icon: selectedIcon,
+        isCustom: true
+      };
+      categories.push(newCat);
+      selectedCategory = newCat;
+      setAccent(newCat.color);
+    }
+
+    localStorage.setItem('tb_categories', JSON.stringify(categories));
+    renderCategories();
+    catModal.classList.remove('active');
+  };
+
+  modalDeleteBtn.onclick = () => {
+    if (editingCategoryId) {
+      deleteCategory(editingCategoryId);
+      catModal.classList.remove('active');
+    }
+  };
+
+  // Timer Core Engine & Hour Support
+  let timerLength = 25 * 60;
+  let timeLeft = timerLength;
+  let timerInterval = null;
+  let isRunning = false;
+
+  const circumference = 2 * Math.PI * 84;
+  ringProgress.style.strokeDasharray = `${circumference} ${circumference}`;
+
+  function updateTimerDisplay() {
+    const h = Math.floor(timeLeft / 3600);
+    const m = Math.floor((timeLeft % 3600) / 60);
+    const s = timeLeft % 60;
+
+    // دعم إظهار الساعات والدقائق والثواني عندما يتجاوز الوقت 60 دقيقة[cite: 5]
+    if (timeLeft >= 3600) {
+      document.getElementById('ring-time').textContent = 
+        `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    } else {
+      document.getElementById('ring-time').textContent = 
+        `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    const fraction = timeLeft / timerLength;
+    const offset = circumference - (fraction * circumference);
+    ringProgress.style.strokeDashoffset = offset;
+  }
+
+  function setTimer(minutes) {
+    pauseTimer();
+    alertSent = false;
+    timerLength = Math.max(1, Math.round(minutes * 60));
+    timeLeft = timerLength;
+    updateTimerDisplay();
+  }
+
+  function setTimerExact(seconds) {
+    pauseTimer();
+    alertSent = false;
+    timerLength = Math.max(1, seconds);
+    timeLeft = timerLength;
+    updateTimerDisplay();
+  }
+
+  function startTimer() {
+    if (isRunning) return;
+    alertSent = false;
+    currentSessionStartedAt = Date.now();
+    isRunning = true;
+    timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        maybeAlertBeforeEnd();
+        updateTimerDisplay();
+      } else {
+        pauseTimer();
+        playAlarmSound();
+        sendNotification();
+        
+        const minsAdded = Math.round(timerLength / 60);
+        totalMinutesFocused += minsAdded;
+        localStorage.setItem('tb_total_minutes', totalMinutesFocused);
+        
+        const todayIndex = new Date().getDay();
+        weeklyData[todayIndex] += minsAdded;
+        localStorage.setItem('tb_weekly_stats', JSON.stringify(weeklyData));
+
+        completedSessions++;
+        localStorage.setItem('tb_completed_sessions', completedSessions);
+
+        updateTotalBalanceDisplay();
+        updateStatsSummary();
+        renderChart();
+      }
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    isRunning = false;
+    clearInterval(timerInterval);
+  }
+
+  function resetTimer() {
+    pauseTimer();
+    timeLeft = timerLength;
+    updateTimerDisplay();
+  }
+
+  document.getElementById('start-btn').onclick = startTimer;
+  document.getElementById('pause-btn').onclick = pauseTimer;
+  document.getElementById('reset-btn').onclick = resetTimer;
+
+  document.querySelectorAll('.pomo-btn[data-pomo]').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.pomo-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setTimer(parseInt(btn.getAttribute('data-pomo')));
+    };
+  });
+
+  // إضافة زر وخيار الوقت المخصص
+  const customTimeModal = document.getElementById('custom-time-modal');
+  document.getElementById('custom-time-btn').onclick = () => {
+    customTimeModal.classList.add('active');
+  };
+
+  document.getElementById('cancel-custom-time-btn').onclick = () => {
+    customTimeModal.classList.remove('active');
+  };
+
+  document.getElementById('apply-custom-time-btn').onclick = () => {
+    const hours = parseInt(document.getElementById('custom-hours').value) || 0;
+    const minutes = parseInt(document.getElementById('custom-minutes').value) || 0;
+    const totalSec = (hours * 3600) + (minutes * 60);
+
+    if (totalSec > 0) {
+      document.querySelectorAll('.pomo-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('custom-time-btn').classList.add('active');
+      setTimerExact(totalSec);
+      customTimeModal.classList.remove('active');
+    }
+  };
+
+  document.getElementById('add-5-btn').onclick = () => {
+    timeLeft += 300;
+    timerLength += 300;
+    updateTimerDisplay();
+  };
+
+  document.getElementById('sub-5-btn').onclick = () => {
+    if (timeLeft > 300) {
+      timeLeft -= 300;
+      timerLength = Math.max(timerLength - 300, timeLeft);
+      updateTimerDisplay();
+    }
+  };
+
+  // Accordions Logic
+  function setupAccordion(headerId, bodyId, chevronId) {
+    const header = document.getElementById(headerId);
+    const body = document.getElementById(bodyId);
+    const chevron = document.getElementById(chevronId);
+
+    header.onclick = () => {
+      const isVisible = body.style.display === 'block';
+      body.style.display = isVisible ? 'none' : 'block';
+      chevron.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+    };
+  }
+
+  setupAccordion('todo-header', 'todo-body', 'todo-chevron');
+  setupAccordion('notes-header', 'notes-body', 'notes-chevron');
+
+  // To-Do Logic
+  let todos = JSON.parse(localStorage.getItem('tb_todos')) || [];
+
+  function renderTodos() {
+    const list = document.getElementById('todo-list');
+    list.innerHTML = '';
+    let completedCount = 0;
+
+    todos.forEach((todo, idx) => {
+      if (todo.done) completedCount++;
+      const li = document.createElement('li');
+      li.style.cssText = `display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--surface-2); border-radius:12px; border:1px solid var(--border);`;
+      li.innerHTML = `
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; text-decoration:${todo.done ? 'line-through' : 'none'}; opacity:${todo.done ? '0.6' : '1'};">
+          <input type="checkbox" ${todo.done ? 'checked' : ''} onchange="toggleTodo(${idx})">
+          <span>${todo.text}</span>
+        </label>
+        <button onclick="deleteTodo(${idx})" style="padding:2px 6px; border:none; background:transparent; color:var(--text-danger); font-size:14px;"><i class="ti ti-trash"></i></button>
+      `;
+      list.appendChild(li);
+    });
+
+    const percent = todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0;
+    document.getElementById('todo-percent').textContent = `${percent}%`;
+  }
+
+  window.toggleTodo = (idx) => {
+    todos[idx].done = !todos[idx].done;
+    localStorage.setItem('tb_todos', JSON.stringify(todos));
+    renderTodos();
+  };
+
+  window.deleteTodo = (idx) => {
+    todos.splice(idx, 1);
+    localStorage.setItem('tb_todos', JSON.stringify(todos));
+    renderTodos();
+  };
+
+  document.getElementById('todo-add').onclick = () => {
+    const input = document.getElementById('todo-input');
+    const val = input.value.trim();
+    if (val) {
+      todos.push({ text: val, done: false });
+      localStorage.setItem('tb_todos', JSON.stringify(todos));
+      input.value = '';
+      renderTodos();
+    }
+  };
+
+  // Notes Logic
+  const notesArea = document.getElementById('notes-area');
+  notesArea.value = localStorage.getItem('tb_notes') || '';
+  notesArea.oninput = () => {
+    localStorage.setItem('tb_notes', notesArea.value);
+  };
+
+  // Stats Summary & Chart Drawing
+  function updateStatsSummary() {
+    const total = weeklyData.reduce((a, b) => a + b, 0);
+    document.getElementById('total-week-time').textContent = `${total}${T[lang].totalMin}`;
+
+    const maxVal = Math.max(...weeklyData);
+    if (maxVal > 0) {
+      const maxIdx = weeklyData.indexOf(maxVal);
+      document.getElementById('best-day').textContent = T[lang].days[maxIdx];
+    } else {
+      document.getElementById('best-day').textContent = '-';
+    }
+
+    const avg = completedSessions > 0 ? Math.round(total / completedSessions) : 0;
+    document.getElementById('avg-session').textContent = `${avg}${T[lang].totalMin}`;
+  }
+
+  function renderChart() {
+    const canvas = document.getElementById('weeklyChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width = canvas.parentElement.clientWidth || 300;
+    const height = canvas.height = 140;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const padding = 25;
+    const chartW = width - padding * 2;
+    const chartH = height - padding * 2;
+    const maxVal = Math.max(...weeklyData, 60);
+
+    const barWidth = chartW / 7 - 10;
+
+    weeklyData.forEach((val, idx) => {
+      const x = padding + idx * (chartW / 7) + 5;
+      const barH = (val / maxVal) * chartH;
+      const y = height - padding - barH;
+
+      ctx.fillStyle = currentAccent;
+      ctx.beginPath();
+      ctx.roundRect(x, y, barWidth, barH, [6, 6, 0, 0]);
+      ctx.fill();
+
+      ctx.fillStyle = isDarkMode ? '#cbd5e1' : '#64748b';
+      ctx.font = '10px Cairo, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(T[lang].days[idx], x + barWidth / 2, height - 8);
+    });
+  }
+
+  setupAccordion('history-header', 'history-body', 'history-chevron');
+
+  document.getElementById('alert-before-end').checked = alertBeforeEnd;
+  document.getElementById('auto-break').checked = autoBreak;
+  document.getElementById('break-duration').value = breakDuration;
+  document.getElementById('alert-before-end').onchange = e => {
+    alertBeforeEnd = e.target.checked;
+    localStorage.setItem('tb_alert_before_end', alertBeforeEnd);
+  };
+  document.getElementById('auto-break').onchange = e => {
+    autoBreak = e.target.checked;
+    localStorage.setItem('tb_auto_break', autoBreak);
+  };
+  document.getElementById('break-duration').onchange = e => {
+    breakDuration = Math.max(1, Math.min(60, parseInt(e.target.value) || 5));
+    e.target.value = breakDuration;
+    localStorage.setItem('tb_break_duration', breakDuration);
+  };
+
+  document.getElementById('start-break-btn').onclick = () => {
+    closeSessionEndModal();
+    setTimer(breakDuration);
+    startTimer();
+  };
+  document.getElementById('close-end-btn').onclick = closeSessionEndModal;
+  document.getElementById('clear-history-btn').onclick = () => {
+    if (confirm('هل تريد مسح سجل الجلسات؟')) {
+      sessionHistory = [];
+      localStorage.setItem('tb_session_history', '[]');
+      renderHistory();
+      updateDashboard();
+    }
+  };
+
+  // Initial Load
+  applyThemeMode();
+  applyLang();
+  setTimer(25);
+  renderHistory();
+  updateDashboard();
+
+})();
+</script>
+</body>
+</html>
